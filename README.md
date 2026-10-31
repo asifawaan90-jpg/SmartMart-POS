@@ -34,9 +34,9 @@ production SaaS apps).
 |-----------|---------|------------|
 | **FRONTEND** | `src/app` (pages), `src/components` (UI: views, dialogs, shadcn/ui), `src/stores` (Zustand state), `src/hooks` | React 19 + Tailwind CSS 4 + shadcn/ui |
 | **BACKEND**  | `src/app/api` (REST API routes: sales, products, customers, expenses, backup, sync…), `src/lib` (business logic: auth, sale-service, backup, print, export, offline sync), `prisma` (database schema + seed) | Next.js API routes + Prisma ORM |
-| **DATABASE** | `db/custom.db` (local SQLite file) or Supabase PostgreSQL (cloud) | SQLite by default — zero setup |
+| **DATABASE** | Local SQLite by default; optional Supabase PostgreSQL | Choose with `DB_PROVIDER`; PostgreSQL uses `SUPABASE_DATABASE_URL` |
 | **ANDROID**  | `android/` (TWA wrapper + keystore) | Wraps the PWA into an APK/AAB |
-| **DOCS**     | `docs/ARCHITECTURE.md`, `docs/SUPABASE.md` | Architecture + cloud setup notes |
+| **DOCS**     | `docs/ARCHITECTURE.md`, `docs/LOCAL-DATABASE.md` | Architecture + local database notes |
 
 ---
 
@@ -53,19 +53,17 @@ Bun also works (`https://bun.sh`) but is optional.
 | **macOS** | double-click **`start-mac.command`** (or run `bash start.sh`) |
 | **Linux** | run `bash start.sh` |
 
-The launcher does **everything automatically**:
+The macOS/Linux launchers do **everything automatically**:
 
 1. installs the packages (first run only, 2–5 minutes)
-2. creates your `.env` (local database mode — zero config)
+2. creates your `.env` (local SQLite mode by default)
 3. creates the database tables
 4. **restores your included data backup** — products, sales, customers (first run only)
 5. starts locally and opens **http://localhost:3000**
 
-The Windows launcher opens an already-running local app immediately. On a
-normal restart it skips database setup and preserves existing data, so it
-doesn't rerun Prisma setup. A public website requires a completed hosting
-deployment and domain configuration; this launcher cannot deploy the app by
-itself.
+The Windows launcher opens the deployed app directly at
+**https://smartmart-pos-iota.vercel.app** without starting a local server.
+To run the local development copy instead, run `START-WINDOWS.bat local`.
 
 > ⏳ **Please be patient:** on the very first start the whole setup takes
 > **2–5 minutes**. After that, every start takes 10–60 seconds.
@@ -78,12 +76,17 @@ itself.
 > **More info → Run anyway** — this is just because the file has no
 > digital signature, not because it is dangerous.
 
-If the app is **already running**, double-clicking the launcher simply
-opens it in your browser — nothing is installed twice.
+For local development, the app uses the local `db/custom.db` file. The Vercel
+website cannot access this computer's local database. To use Supabase Postgres instead, set
+`DB_PROVIDER=postgres` and the complete private
+`SUPABASE_DATABASE_URL` in `.env`; see [docs/LOCAL-DATABASE.md](./docs/LOCAL-DATABASE.md).
+For a new Supabase database, inspect the target and run
+`npm run db:push:pg` once to create its tables.
 
-On Windows, the launcher checks that cloud database settings are complete
-before starting. If using Supabase, replace any template values in `.env` with
-your real Session Pooler URI; never share the URI or password in chat.
+Supabase Storage can also be configured separately for encrypted cloud
+backups while the primary database remains SQLite. See
+[docs/LOCAL-DATABASE.md](./docs/LOCAL-DATABASE.md) for the required private
+service-role and encryption secrets.
 
 Login on first start: `manager@smartmart.app` / `SmartMart@123` —
 **change the password immediately** (Settings → Change password).
@@ -115,31 +118,17 @@ Open **http://localhost:3000** in your browser. Done!
 
 Option A restores the included backup automatically on first start
 (`data-backup/smartmart-data-backup-2026-10-10.json`). With Option B the database
-starts **empty** — to load your real data, do the next step.
+starts empty unless `db/custom.db` already exists — to load the included data,
+use the restore step below.
 
 ---
-
-## Use Supabase for the restored data
-
-To restore the included backup directly to Supabase instead of the local
-SQLite database, configure `SUPABASE_DATABASE_URL` in `.env` on your computer
-and run:
-
-```bash
-npm run supabase:restore
-```
-
-This creates the PostgreSQL schema, imports the included backup, and switches
-the app to Supabase after the import succeeds. It does not assign a
-subscription. See [docs/SUPABASE.md](./docs/SUPABASE.md) for setup and safety
-details. Never share the database password in chat or commit it.
 
 ---
 
 ## 4. Restore your data (products, sales, customers — everything)
 
 The file `data-backup/smartmart-data-backup-2026-10-10.json` is your full
-business snapshot taken from the live cloud database on 2026-10-10.
+business snapshot exported on 2026-10-10.
 
 ```bash
 npm run restore
@@ -167,37 +156,7 @@ Sign in with your normal email (example: `manager@smartmart.app`) and
 
 ---
 
-## 5. Use your own cloud database (Supabase PostgreSQL) — optional
-
-By default the app uses a local SQLite file (no internet needed). To run on a
-server with a shared cloud database:
-
-1. Create a project at https://supabase.com → Project Settings → Database →
-   copy the **Connection string (URI)** (use the "Pooler" one, port 5432).
-2. Put it in `.env`:
-
-```
-DB_PROVIDER=postgres
-SUPABASE_DATABASE_URL="postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres"
-```
-
-3. Create tables and generate the Postgres client:
-
-```bash
-npm run db:push:pg
-npm run db:generate:pg
-```
-
-4. Restore your data into it (same command as step 4 above, but run with
-   `SUPABASE_DATABASE_URL` present — add `--pg` at the end):
-
-```bash
-node scripts/restore-from-backup.mjs data-backup/smartmart-data-backup-2026-10-10.json --pg
-```
-
----
-
-## 6. Save / download all app data (backup)
+## 5. Save / download all app data (backup)
 
 **Inside the app (works on phone too):**
 Settings → **Mail & backup** tab → download the full snapshot as
@@ -217,7 +176,7 @@ email passwords.
 
 ---
 
-## 7. Production build (run on a server / VPS)
+## 6. Production build (run on a server / VPS)
 
 ```bash
 npm run build
@@ -285,7 +244,7 @@ smartmart-pos/
 │   ├── lib/                      # ★ shared logic (used by both sides)
 │   │   ├── auth.ts, permissions.ts, i18n.ts (EN/UR/AR…)
 │   │   ├── sale-service.ts, product-service.ts, inventory-service.ts
-│   │   ├── db.ts, db-provider.ts # database client (sqlite/postgres switch)
+│   │   ├── db.ts                 # local SQLite database client
 │   │   ├── backup.ts             # backup engine (server)
 │   │   ├── print.ts, export.ts   # thermal/A4 printing, CSV/Excel export
 │   │   └── offline.ts (stores/)  # offline queue + sync engine
@@ -308,8 +267,8 @@ smartmart-pos/
 | "Cannot find module '@prisma/client'" | run `npx prisma generate` |
 | Port 3000 already in use | `npm run dev -- -p 3001` |
 | Login says wrong password after restore | use `SmartMart@123` (temporary restore password), then change it |
-| Want a fresh empty store | skip the restore step, or delete `db/custom.db` and run `npx prisma db push` again |
-| Cloud mode: "max clients reached" | your Supabase pool is busy — the app already uses pooled connections; wait or lower `connection_limit` in the URL |
+| Local database cannot be opened | keep `db/custom.db` in place and run `npx prisma db push` to sync its tables |
+| Supabase database cannot be opened | set `DB_PROVIDER=postgres`, verify the private `SUPABASE_DATABASE_URL`, and check that the Supabase schema is initialized |
 
 ---
 

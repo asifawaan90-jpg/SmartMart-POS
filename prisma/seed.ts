@@ -249,7 +249,7 @@ async function main() {
   }
 
   // ── Customers ─────────────────────────────────────────────
-  const customerDefs = [
+  const customerDefs: [string, string, number][] = [
     ['Walk-in Customer', '', 0],
     ['Rashid Mehmood', '0301-9876543', 450],
     ['Zainab Traders', '0302-8765432', 0],

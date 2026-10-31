@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  allowedHosts: ["smartmart.local"],
   async rewrites() {
     return [
       // Task 68 — Android TWA Digital Asset Links verification file

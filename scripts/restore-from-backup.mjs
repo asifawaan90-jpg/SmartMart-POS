@@ -4,7 +4,6 @@
  *
  * Usage:
  *   node scripts/restore-from-backup.mjs <path/to/backup.json>          # local SQLite
- *   node scripts/restore-from-backup.mjs <path/to/backup.json> --pg     # PostgreSQL (Supabase)
  *
  * Prerequisites:
  *   npm install                     (installs prisma + @prisma/client + bcryptjs)
@@ -26,7 +25,6 @@ import { randomUUID } from 'crypto'
 import bcrypt from 'bcryptjs'
 
 const args = process.argv.slice(2)
-const usePg = args.includes('--pg')
 let file = args.find(a => !a.startsWith('--'))
 if (!file) {
   // no argument given — auto-pick the included data backup
@@ -36,29 +34,13 @@ if (!file) {
   } catch {}
 }
 if (!file || !existsSync(file)) {
-  console.error('Usage: node scripts/restore-from-backup.mjs <backup.json> [--pg]')
+  console.error('Usage: node scripts/restore-from-backup.mjs <backup.json>')
   console.error('       (or run "npm run restore" — it auto-picks the file in data-backup/)')
   process.exit(1)
 }
 
-let PrismaClient
-if (usePg) {
-  const mod = await import('../src/generated/postgres/index.js')
-  PrismaClient = mod.default ?? mod.PrismaClient
-  if (!process.env.SUPABASE_DATABASE_URL) {
-    console.error('Missing SUPABASE_DATABASE_URL in environment (.env).')
-    process.exit(1)
-  }
-} else {
-  const mod = await import('@prisma/client')
-  PrismaClient = mod.PrismaClient
-  if (!process.env.DATABASE_URL) {
-    console.error('Missing DATABASE_URL in environment (.env).')
-    process.exit(1)
-  }
-}
-
-const db = new PrismaClient()
+const { PrismaClient } = await import('@prisma/client')
+const db = new PrismaClient({ datasources: { db: { url: 'file:../db/custom.db' } } })
 const data = JSON.parse(readFileSync(file, 'utf8'))
 const meta = data.meta || {}
 const businessId = meta.businessId
@@ -103,7 +85,7 @@ async function put(tx, model, row) {
 }
 
 console.log(`Restoring "${meta.businessName || businessId}" from ${file}`)
-console.log(`Target: ${usePg ? 'PostgreSQL (SUPABASE_DATABASE_URL)' : `SQLite (${process.env.DATABASE_URL})`}\n`)
+console.log('Target: local SQLite (db/custom.db)\n')
 
 await db.$transaction(async tx => {
   // ── 1. Business ──────────────────────────────────────────────

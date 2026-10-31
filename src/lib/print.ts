@@ -345,7 +345,7 @@ export function thermalReceiptHTML(biz: ReceiptBiz, sale: ReceiptSale, widthMm =
     ${sale.barcodeSvg ? `<div class="bc" style="margin-top:2.5mm;padding-top:1.5mm;border-top:1px dashed #000;">${sale.barcodeSvg}</div>` : ''}
     <div style="text-align:center;margin-top:2.5mm;border-top:1px dashed #000;padding-top:2mm;">
       <div>${esc(biz.footer || 'Thank you for shopping with us!')}</div>
-      <div style="font-size:9px;margin-top:1mm;">Powered by SmartMart POS</div>
+      <div style="font-size:9px;margin-top:1mm;">Powered by Awan Tech</div>
     </div>
   </div>
   <style>

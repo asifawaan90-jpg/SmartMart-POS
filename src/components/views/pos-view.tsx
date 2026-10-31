@@ -456,11 +456,16 @@ export default function PosView() {
 
   const resumeHold = async (id: string) => {
     try {
-      const held = await api<{ id: string; customerId: string | null; cart: CartLine[] }>(`/api/sales/hold`)
-      const h = (Array.isArray(held) ? held : []).find(x => x.id === id) as unknown as { customerId: string | null; cart: CartLine[] }
+      // GET /api/sales/hold returns the held sale with `cart` stored as a JSON
+      // string (see POST /api/sales/hold) — parse it back before restoring.
+      const held = await api<{ id: string; customerId: string | null; cart: string }>(`/api/sales/hold`)
+      const h = (Array.isArray(held) ? held : []).find(x => x.id === id)
       if (!h) return
+      const lines: CartLine[] = h.cart
+        ? (() => { try { return JSON.parse(h.cart) } catch { return [] } })()
+        : []
       cart.clear()
-      for (const l of h.cart) cart.add(l)
+      for (const l of lines) cart.add(l)
       if (h.customerId) {
         const c = customers.find(x => x.id === h.customerId)
         cart.setCustomer(h.customerId, c?.name || '')
@@ -970,6 +975,7 @@ export default function PosView() {
       {/* Scanned-invoice viewer — instant on-screen document with print options.
           Rendered last → stacks on top of receipt & camera dialogs. */}
       <InvoiceViewDialog result={invoiceFound} onClose={() => setInvoiceFound(null)} />
+      
     </div>
   )
 }

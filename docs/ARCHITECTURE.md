@@ -9,7 +9,7 @@ Grocery / Mini-Mart Management & POS platform. Offline-first, multi-tenant, subs
 | Web/Desktop/Mobile UI | Next.js 16 + React 19 + TypeScript (SPA shell at `/`) | Responsive — same UI serves PC (keyboard/shortcuts) and phones (touch, camera scanner). Installable PWA. |
 | Styling | Tailwind CSS 4 + shadcn/ui + 7 themes via CSS variables | Classic, Modern, Ocean, Emerald, Royal, Sunset, Dark |
 | Backend | Next.js API routes (Node runtime) | REST, JSON |
-| ORM/DB | Prisma + SQLite (dev) | Schema is portable to PostgreSQL for production clusters — swap `provider` and types. |
+| ORM/DB | Prisma + SQLite or PostgreSQL | SQLite is the default (`db/custom.db`); PostgreSQL is selected explicitly with `DB_PROVIDER=postgres` and `SUPABASE_DATABASE_URL`. |
 | Auth | JWT (jose, HS256) + bcryptjs password hashing | Header-token auth (CSRF-safe), rate-limited login, audit-logged. |
 | Offline | localStorage cache + offline queue (zustand persist) + idempotent `/api/sync` | ClientRef UUIDs, PENDING/SYNCING/SYNCED/FAILED states, automatic retry. |
 | Exports | SheetJS (XLSX), native CSV, print-to-PDF views | |

@@ -1,0 +1,74 @@
+{
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [
+    "static/chunks/0cz1d0mv5g_q7.js"
+  ],
+  "lowPriorityFiles": [
+    "static/pEwnEvJvGEJYzyZ4CfgmZ/_buildManifest.js",
+    "static/pEwnEvJvGEJYzyZ4CfgmZ/_ssgManifest.js",
+    "static/pEwnEvJvGEJYzyZ4CfgmZ/_clientMiddlewareManifest.js"
+  ],
+  "rootMainFiles": [
+    "static/chunks/2n2x6ko-morcw.js",
+    "static/chunks/0r6b794saizig.js",
+    "static/chunks/40a4a_vas3hig.js",
+    "static/chunks/turbopack-2c3mg3r-05n1w.js"
+  ],
+  "rootMainFilesTree": {},
+  "pagesChunkGroupBootstrapParams": {
+    "/page": {
+      "otherChunks": [
+        "static/chunks/2n2x6ko-morcw.js",
+        "static/chunks/0r6b794saizig.js",
+        "static/chunks/40a4a_vas3hig.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/_not-found/page": {
+      "otherChunks": [
+        "static/chunks/2n2x6ko-morcw.js",
+        "static/chunks/0r6b794saizig.js",
+        "static/chunks/40a4a_vas3hig.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/_global-error/page": {
+      "otherChunks": [
+        "static/chunks/2n2x6ko-morcw.js",
+        "static/chunks/0r6b794saizig.js",
+        "static/chunks/40a4a_vas3hig.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/admin/sync/page": {
+      "otherChunks": [
+        "static/chunks/2n2x6ko-morcw.js",
+        "static/chunks/0r6b794saizig.js",
+        "static/chunks/40a4a_vas3hig.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/fb-check/page": {
+      "otherChunks": [
+        "static/chunks/2n2x6ko-morcw.js",
+        "static/chunks/0r6b794saizig.js",
+        "static/chunks/40a4a_vas3hig.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    }
+  },
+  "chunkLoadingGlobal": "TURBOPACK"
+}

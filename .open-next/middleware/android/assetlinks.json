@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.smartmart.pos",
+      "sha256_cert_fingerprints": [
+        "DA:43:7C:DA:02:E3:A5:E5:58:DB:21:E4:99:AD:2C:84:56:49:B8:B6:3C:D8:F1:3C:32:BC:F4:D9:43:58:4D:76"
+      ]
+    }
+  }
+]

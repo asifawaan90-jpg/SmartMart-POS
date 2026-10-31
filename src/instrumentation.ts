@@ -8,6 +8,13 @@
  */
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
+    const { assertDbConfig, dbProvider } = await import('./lib/db-provider')
+    assertDbConfig()
+    if (dbProvider() === 'postgres') {
+      console.log('[db] PostgreSQL selected; skipping SQLite-only recovery, journals, and file backups')
+      return
+    }
+
     // Task 57 — BEFORE anything else: if a deploy just wiped/recreated the
     // database, restore the newest verified snapshot automatically so the
     // owner never wakes up to demo data (trial → monthly, sales gone).

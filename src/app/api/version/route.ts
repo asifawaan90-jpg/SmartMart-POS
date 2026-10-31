@@ -33,10 +33,6 @@ function buildId(): string {
 }
 
 export async function GET() {
-  // Task 64 — report which database the backend is running on so the UI can
-  // show it honestly (dashboard SyncCard chip) and go-live verification can
-  // assert the switch actually happened. Only the host is exposed — never
-  // credentials.
   const provider = dbProvider()
   return ok({
     version: buildId(),

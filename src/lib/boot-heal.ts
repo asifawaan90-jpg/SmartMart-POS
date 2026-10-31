@@ -34,7 +34,6 @@
 import fs from 'fs'
 import path from 'path'
 import { execFileSync } from 'child_process'
-import { isPostgres } from './db-provider'
 
 const DB_YOUNG_MINUTES = 20
 const BACKUP_DIR = path.join(process.cwd(), 'backups')
@@ -79,11 +78,6 @@ function newestSnapshot(): string | null {
 
 export function bootHeal(): void {
   try {
-    // Task 64 — under the Supabase cloud database there is no local file to
-    // wipe: deploys and restarts cannot erase cloud rows, so the file-swap
-    // heal is meaningless there. The journal replay (Task 61) still runs and
-    // covers the one remaining rollback window (in-flight device uploads).
-    if (isPostgres()) { log('provider=postgres (Supabase) — cloud database cannot be wiped by deploys; file-based heal disabled'); return }
     if (!fs.existsSync(DB_FILE)) { log('no database file yet — nothing to heal'); return }
     const stat = fs.statSync(DB_FILE)
     const ageMin = (Date.now() - stat.birthtimeMs) / 60_000

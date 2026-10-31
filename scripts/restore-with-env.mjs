@@ -5,7 +5,7 @@
  * then runs scripts/restore-from-backup.mjs with the same arguments.
  *
  * Usage:
- *   node scripts/restore-with-env.mjs <path/to/backup.json> [--pg]
+ *   node scripts/restore-with-env.mjs <path/to/backup.json>
  *   node scripts/restore-with-env.mjs                  (auto-picks data-backup/*.json)
  */
 import { readFileSync, existsSync } from 'node:fs'
@@ -26,7 +26,7 @@ if (existsSync(envPath)) {
     } else if (v.includes(' #')) {
       v = v.split(' #')[0].trim()
     }
-    process.env[m[1]] = v
+    if (!process.env[m[1]]) process.env[m[1]] = v
   }
 }
 

@@ -11,7 +11,7 @@
 #    3. creates .env from the included example  (first run only)
 #    4. creates the database tables
 #    5. restores the included data backup       (first run only)
-#    6. starts the app and opens http://localhost:3000
+#    6. starts the app and opens http://smartmart.local
 # ─────────────────────────────────────────────────────────────────────
 set -e
 cd "$(dirname "$0")"
@@ -70,7 +70,7 @@ echo ""
 echo "======================================"
 echo "   SmartMart POS is starting..."
 echo ""
-echo "   Open:   http://localhost:3000"
+echo "   Open:   http://smartmart.local"
 echo "   Login:  manager@smartmart.app / SmartMart@123"
 echo "           (change the password after first login)"
 echo "   Stop:   press Ctrl+C"
@@ -79,8 +79,11 @@ echo ""
 
 # open the browser once the server is up (best effort, works on macOS + Linux)
 ( sleep 8
-  open "http://localhost:3000" 2>/dev/null \
-    || xdg-open "http://localhost:3000" 2>/dev/null \
+  open "http://smartmart.local" 2>/dev/null \
+    || xdg-open "http://smartmart.local" 2>/dev/null \
     || true ) &
 
 npm run dev
+
+
+

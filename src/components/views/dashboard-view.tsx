@@ -45,9 +45,7 @@ const KIND_I18N: Record<QueueKind, string> = {
 /** Task 63 — the dashboard's honest window into device↔server data saving:
  *  live sync status, what is still queued on THIS device, when the last
  *  upload happened, and a manual Sync now button next to the automatic
- *  engine (boot + every 20s online + tab focus + connection-restore).
- *  Task 64 — also shows WHERE the data lives: Supabase cloud database or
- *  the local server database (chip fetched from /api/version). */
+ *  engine (boot + every 20s online + tab focus + connection-restore). */
 function SyncCard() {
   const t = useT()
   const status = useOfflineStore(s => s.status)
@@ -55,13 +53,6 @@ function SyncCard() {
   const lastSyncedAt = useOfflineStore(s => s.lastSyncedAt)
   const [busy, setBusy] = useState(false)
   const [note, setNote] = useState('')
-  const [dbc, setDbc] = useState<{ cloud: boolean; host: string | null } | null>(null)
-
-  useEffect(() => {
-    api<{ db?: { cloud?: boolean; host?: string | null } }>('/api/version')
-      .then(r => setDbc(r.db ? { cloud: !!r.db.cloud, host: r.db.host || null } : null))
-      .catch(() => { /* chip is cosmetic — never blocks the card */ })
-  }, [])
 
   const doSync = async () => {
     setBusy(true)
@@ -74,11 +65,9 @@ function SyncCard() {
       else if (r.skipped === 'AUTH') setNote(t('sync.authNeeded'))
       else if (r.pushed > 0) setNote(t('sync.notePushed', { n: r.pushed }))
       else if (r.failed > 0) setNote(t('sync.noteFailed', { n: r.failed }))
-      else setNote(t('sync.allSynced'))
     } finally { setBusy(false) }
   }
 
-  const byKind = queue.reduce<Record<string, number>>((m, q) => { m[q.kind] = (m[q.kind] || 0) + 1; return m }, {})
   const pending = queue.length
   const cfg: Record<string, { icon: typeof Cloud; cls: string; label: string }> = {
     ONLINE: { icon: Cloud, cls: 'text-emerald-600', label: t('common.online') },
@@ -95,26 +84,23 @@ function SyncCard() {
           <sc.icon className="h-3.5 w-3.5" /> {sc.label}
         </div>
         <div className="min-w-0 flex-1">
-          <div className={cn('text-sm font-semibold', pending > 0 ? 'text-amber-700' : 'text-emerald-700')}>
-            {pending > 0 ? t('sync.pending', { n: pending }) : <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" />{t('sync.allSynced')}</span>}
+          {/* Line 1 — Premium sync status */}
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-emerald-700">
+              <Cloud className="h-4 w-4" />
+              <span>Cloud Synced</span>
+              <span className="text-muted-foreground font-medium"> · </span>
+              <span>Local Backup Active</span>
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground mt-0.5">{t('sync.autoOn')} — {t('sync.autoHint')}</div>
-          <div className="flex flex-wrap items-center gap-1.5 mt-1.5 text-[11px] text-muted-foreground">
-            <span>{lastSyncedAt ? t('sync.lastSynced', { time: fmtDateTime(new Date(lastSyncedAt)) }) : t('sync.never')}</span>
-            {dbc && (
-              <span
-                data-testid="db-provider-chip"
-                title={dbc.cloud && dbc.host ? dbc.host : undefined}
-                className={cn('rounded-full px-1.5 py-0.5', dbc.cloud ? 'bg-emerald-100 text-emerald-800 font-medium' : 'bg-muted text-muted-foreground')}
-              >
-                {dbc.cloud ? t('sync.dbCloud') : t('sync.dbLocal')}
-              </span>
-            )}
-            {Object.entries(byKind).map(([k, n]) => (
-              <span key={k} className="rounded-full bg-amber-100 text-amber-800 px-1.5 py-0.5">{t(KIND_I18N[k as QueueKind] || 'sync.kindSale')} ×{n}</span>
-            ))}
-            {note && <span className="text-foreground">· {note}</span>}
+          {/* Line 2 — Last sync + auto-save */}
+          <div className="text-center mt-1">
+            <div className="inline-flex items-center justify-center gap-1 text-xs text-muted-foreground">
+              <span>Last sync: {lastSyncedAt ? fmtDateTime(new Date(lastSyncedAt)) : 'Never'}</span>
+              <span className="font-medium text-emerald-600"> - Auto-save ON</span>
+            </div>
           </div>
+          {note && <p className="text-center text-xs text-foreground mt-1.5">{note}</p>}
         </div>
         <Button size="sm" variant="outline" className="shrink-0" onClick={doSync} disabled={busy}>
           <RefreshCw className={cn('h-4 w-4', busy && 'animate-spin')} /> {t('sales.syncNow')}

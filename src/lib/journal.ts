@@ -29,6 +29,7 @@
  */
 import fs from 'fs'
 import path from 'path'
+import { dbProvider } from './db-provider'
 
 const BACKUP_DIR = path.join(process.cwd(), 'backups')
 const JOURNAL_DIR = path.join(BACKUP_DIR, 'journal')
@@ -58,6 +59,7 @@ function journalFile(kind: 'SALE' | 'SUB', ts = Date.now()): string {
 /** Append one entry. NEVER throws — data writes must not fail because of journaling. */
 export function appendJournal(entry: { kind: 'SALE' | 'SUB'; ts?: number; [k: string]: unknown }): void {
   try {
+    if (dbProvider() === 'postgres') return
     const line = JSON.stringify({ ts: entry.ts ?? Date.now(), ...entry }) + '\n'
     fs.appendFileSync(journalFile(entry.kind, entry.ts), line)
   } catch (e) {

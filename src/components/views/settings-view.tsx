@@ -393,7 +393,7 @@ export default function SettingsView({ initialTab }: { initialTab?: string } = {
             <TabsTrigger value="theme" className="text-xs"><Palette className="h-3.5 w-3.5 mr-1" />{t('set.tabTheme')}</TabsTrigger>
           </>) : null}
           <TabsTrigger value="mail" className="text-xs" data-testid="tab-mail"><Mail className="h-3.5 w-3.5 mr-1" />{t('set.tabMail')}</TabsTrigger>
-          {canManage ? <TabsTrigger value="backup" className="text-xs"><DatabaseBackup className="h-3.5 w-3.5 mr-1" />{t('set.tabExport')}</TabsTrigger> : null}
+          {canManage || user?.role === 'SUPER_ADMIN' ? <TabsTrigger value="backup" className="text-xs"><DatabaseBackup className="h-3.5 w-3.5 mr-1" />{t('set.tabExport')}</TabsTrigger> : null}
         </TabsList>
 
         <TabsContent value="business">

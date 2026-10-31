@@ -1,13 +1,12 @@
-// SmartMart POS — Production schema
-// Portable: switch provider to "postgresql" for production deployment.
+// SmartMart POS — canonical local SQLite schema.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 // ─── Tenancy & Auth ────────────────────────────────────────────
 
