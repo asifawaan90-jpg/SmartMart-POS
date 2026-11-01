@@ -1,5 +1,12 @@
-// SmartMart POS — canonical local SQLite schema.
+﻿generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
 
+datasource db {
+  provider = "sqlite"
+  url = "file:./dev.db"
+}
 datasource db {
   provider = ""sqlite" aur url = "file:./dev.db""
   url      = env("DATABASE_URL")
@@ -8,7 +15,7 @@ generator client {previewFeatures = ["driverAdapters"]
   provider = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x", "windows"]
 }
-// ─── Tenancy & Auth ────────────────────────────────────────────
+// â”€â”€â”€ Tenancy & Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Business {
   id          String   @id @default(uuid())
@@ -70,7 +77,7 @@ model User {
   @@index([businessId])
 }
 
-// ─── Subscription / Billing ────────────────────────────────────
+// â”€â”€â”€ Subscription / Billing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SubscriptionPlan {
   id           String   @id @default(uuid())
@@ -156,7 +163,7 @@ model PlatformConfig {
   updatedAt DateTime @updatedAt
 }
 
-// ─── Catalog ───────────────────────────────────────────────────
+// â”€â”€â”€ Catalog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Category {
   id         String   @id @default(uuid())
@@ -254,7 +261,7 @@ model InventoryTransaction {
   @@unique([businessId, clientRef])
 }
 
-// ─── Sales ─────────────────────────────────────────────────────
+// â”€â”€â”€ Sales â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Sale {
   id            String    @id @default(uuid())
@@ -273,7 +280,7 @@ model Sale {
   tax           Float     @default(0)
   total         Float     @default(0)
   paid          Float     @default(0)
-  givenCash     Float     @default(0) // cash handed by customer at POS (may exceed total → change)
+  givenCash     Float     @default(0) // cash handed by customer at POS (may exceed total â†’ change)
   dueAmount     Float     @default(0)
   profit        Float     @default(0)
   paymentMethod String    @default("CASH") // CASH | CARD | BANK | DIGITAL | KHATA | MIXED
@@ -345,7 +352,7 @@ model HeldSale {
   @@index([businessId, userId])
 }
 
-// ─── Purchases ─────────────────────────────────────────────────
+// â”€â”€â”€ Purchases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Purchase {
   id           String   @id @default(uuid())
@@ -403,7 +410,7 @@ model PurchaseReturn {
   @@unique([businessId, returnNo])
 }
 
-// ─── Contacts ──────────────────────────────────────────────────
+// â”€â”€â”€ Contacts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Customer {
   id             String   @id @default(uuid())
@@ -485,7 +492,7 @@ model SupplierTransaction {
   @@index([businessId, supplierId, createdAt])
 }
 
-// ─── Expenses ──────────────────────────────────────────────────
+// â”€â”€â”€ Expenses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model ExpenseCategory {
   id         String   @id @default(uuid())
@@ -517,7 +524,7 @@ model Expense {
   @@index([businessId, expenseDate])
 }
 
-// ─── HR: Attendance & Payroll ─────────────────────────────────
+// â”€â”€â”€ HR: Attendance & Payroll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Attendance {
   id             String    @id @default(uuid())
@@ -577,7 +584,7 @@ model PayrollItem {
 }
 
 
-// ─── Platform ──────────────────────────────────────────────────
+// â”€â”€â”€ Platform â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Setting {
   id         String   @id @default(uuid())
