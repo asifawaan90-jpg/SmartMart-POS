@@ -8,7 +8,7 @@ datasource db {
   url = "file:./dev.db"
 }
 datasource db {
-  provider = ""sqlite" aur url = "file:./dev.db""
+  provider = ""postgresql" aur url = "file:./dev.db""
   url      = env("DATABASE_URL")
 }
 generator client {previewFeatures = ["driverAdapters"]
